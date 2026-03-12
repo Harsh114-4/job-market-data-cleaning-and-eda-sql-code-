@@ -1,0 +1,83 @@
+select * from `global+ai+job+market+2025` ;
+
+create table l like `global+ai+job+market+2025`; 
+
+insert l select * from `global+ai+job+market+2025` ; 
+
+select * from l ; 
+
+# data cleaning 
+
+with l_d as ( select * , row_number() over (partition by job_id, job_title, salary_usd, salary_currency, experience_level, employment_type, company_location, company_size, employee_residence, remote_ratio, required_skills, education_required, years_experience, industry, posting_date, application_deadline, job_description_length, benefits_score, company_name) as r_n from l )select * from l_d where r_n>1;
+
+select * , count(*) as dup_c from l group by job_id, job_title, salary_usd, salary_currency, experience_level, employment_type, company_location, company_size, employee_residence, remote_ratio, required_skills, education_required, years_experience, industry, posting_date, application_deadline, job_description_length, benefits_score, company_name having dup_c>1 ;
+
+# no dup values found 
+
+select * from l ; 
+
+select distinct job_title from l ;
+
+desc l; 
+
+select * from l;
+
+select DISTINCT salary_currency from l ; 
+select distinct company_name from l ;
+
+alter table l modify posting_date date ;
+alter table l modify application_deadline date ;
+
+select * from l ; 
+
+SELECT *
+FROM l
+WHERE job_id IS NULL OR job_id = ''
+   OR job_title IS NULL OR job_title = ''
+   OR salary_usd IS NULL
+   OR salary_currency IS NULL OR salary_currency = ''
+   OR experience_level IS NULL OR experience_level = ''
+   OR employment_type IS NULL OR employment_type = ''
+   OR company_location IS NULL OR company_location = ''
+   OR company_size IS NULL OR company_size = ''
+   OR employee_residence IS NULL OR employee_residence = ''
+   OR remote_ratio IS NULL
+   OR required_skills IS NULL OR required_skills = ''
+   OR education_required IS NULL OR education_required = ''
+   OR years_experience IS NULL
+   OR industry IS NULL OR industry = ''
+   OR posting_date IS NULL
+   OR application_deadline IS NULL
+   OR job_description_length IS NULL
+   OR benefits_score IS NULL
+   OR company_name IS NULL OR company_name = '';
+   
+   select * from l ; 
+   
+   # EDA 
+   
+   SELECT job_title ,avg(salary_usd) as avg_sal from  l group by job_title order by avg_sal;
+   
+   select experience_level,avg(salary_usd) d from l group by experience_level order by d ; 
+   
+   select company_location,count(job_id) f from l group by company_location order by f ;
+   
+   select industry,count(job_id) f from l group by industry order by f ;
+   
+   select * from l ;
+   
+   select count(job_id) from l ; 
+   
+   select company_location,avg(salary_usd) f from l group by company_location order by f ; 
+   
+   select industry ,avg(years_experience) f from l group by industry order by f ;
+   
+   select * from l ; 
+   
+   select company_size , avg(salary_usd) f from l group by company_size order by f ;
+   
+   select required_skills from l ; 
+   
+   select SUBSTRING_INDEX(required_skills,',',1) FROM l; 
+   
+   select  max(length(required_skills)) from l ;
